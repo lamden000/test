@@ -436,5 +436,5 @@ namespace TaiXiu
             this.Close();
         }
     }
+    #endregion
 }
-#endregion
