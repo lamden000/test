@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
+using TaiXiu.Properties;
 
 namespace TaiXiu
 {
@@ -45,7 +47,7 @@ namespace TaiXiu
         #endregion
         #region 52 cards definition
         Card c2C = new Card(16, 1, Image.FromFile("2C.png"));
-        Card c2S = new Card(16, 2, Image.FromFile("2S.png"));
+        Card c2S = new Card(16, 2, Image.FromFile("Resources\\2S.png"));
         Card c2D = new Card(16, 3, Image.FromFile("2D.png"));
         Card c2H = new Card(16, 4, Image.FromFile("2H.png"));
         Card c3C = new Card(3, 1, Image.FromFile("3C.png"));
@@ -118,7 +120,7 @@ namespace TaiXiu
             {
                 isSelected[boxi - 1] = 0;
                 selectedn--;
-                a.Top += 10;
+                a.Top += 10;             
             }
         }
         string KTLoaiBai(Card[] Player)
