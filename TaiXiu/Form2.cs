@@ -229,6 +229,7 @@ namespace TaiXiu
                         Player[j] = temp;
                     }
             }
+            
         }
         #endregion
         #region event handle
