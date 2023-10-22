@@ -127,7 +127,6 @@ namespace TaiXiu
         {
             if (selectedn == 1)
                 return "Le";
-            Card[] Cards = new Card[selectedn];
             int j = 0;
             int[] value = new int[selectedn];
             int temp;
@@ -135,8 +134,7 @@ namespace TaiXiu
             {
                 if (isSelected[i] == 1)
                 {
-                    Cards[j] = Player[i];
-                    value[j] = Cards[j].getValue();
+                    value[j] = player[i].getValue();
                     j++;
                 }
             }
@@ -152,7 +150,7 @@ namespace TaiXiu
             }
             if (selectedn == 2)
             {
-                if (Cards[0].getValue() == Cards[1].getValue())
+                if (value[0] == value[1])
                     return "Doi";
             }
             for (int i = 0; i < selectedn - 1; i++)
@@ -291,7 +289,6 @@ namespace TaiXiu
             xepBai(player);
             #region picture
             pictureBox1.Location = new Point(146, 353);
-            button2.Location = new Point(2, 12);
             pictureBox2.Location = new Point(168, 353);
             pictureBox3.Location = new Point(192, 354);
             pictureBox4.Location = new Point(218, 353);
