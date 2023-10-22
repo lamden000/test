@@ -263,6 +263,7 @@ namespace TaiXiu
         {
             playern = 13;
             selectedn = 0;
+            PictureBox[] pictureBoxes= { pictureBox1,pictureBox2,pictureBox3,pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12,pictureBox13 };
             Card[] desk = { c2C, c2S, c2D, c2H, c3C, c3D, c3H, c3S, c4C, c4D, c4H, c4S, c5C, c5D, c5H, c5S, c6C, c6D, c6H, c6S, c7C, c7D, c7S, c7H, c8C, c8D, c8H, c8S, c9C, c9D, c9H, c9S, c10C, c10D, c10H, c10S, cJC, cJD, cJH, cJS, cQC, cQD, cQH, cQS, cKS, cKH, cKD, cKC, cAS, cAD, cAH, cAC };
             int[] deski = new int[52];
             Random rand = new Random();
@@ -287,47 +288,21 @@ namespace TaiXiu
                 else i -= 1;
             }
             xepBai(player);
-            #region picture
-            pictureBox1.Location = new Point(146, 353);
-            pictureBox2.Location = new Point(168, 353);
-            pictureBox3.Location = new Point(192, 354);
-            pictureBox4.Location = new Point(218, 353);
-            pictureBox5.Location = new Point(241, 354);
-            pictureBox6.Location = new Point(266, 353);
-            pictureBox7.Location = new Point(292, 353);
-            pictureBox8.Location = new Point(315, 353);
-            pictureBox9.Location = new Point(340, 353);
-            pictureBox10.Location = new Point(366, 354);
-            pictureBox11.Location = new Point(389, 354);
-            pictureBox12.Location = new Point(414, 354);
-            pictureBox13.Location = new Point(440, 354);
-            pictureBox1.Image = player[0].getimg();
-            pictureBox2.Image = player[1].getimg();
-            pictureBox3.Image = player[2].getimg();
-            pictureBox4.Image = player[3].getimg();
-            pictureBox5.Image = player[4].getimg();
-            pictureBox6.Image = player[5].getimg();
-            pictureBox7.Image = player[6].getimg();
-            pictureBox8.Image = player[7].getimg();
-            pictureBox9.Image = player[8].getimg();
-            pictureBox10.Image = player[9].getimg();
-            pictureBox11.Image = player[10].getimg();
-            pictureBox12.Image = player[11].getimg();
-            pictureBox13.Image = player[12].getimg();
-            pictureBox1.Show();
-            pictureBox2.Show();
-            pictureBox3.Show();
-            pictureBox4.Show();
-            pictureBox5.Show();
-            pictureBox6.Show();
-            pictureBox7.Show();
-            pictureBox8.Show();
-            pictureBox9.Show();
-            pictureBox10.Show();
-            pictureBox11.Show();
-            pictureBox12.Show();
-            pictureBox13.Show();
-            #endregion          
+            //lay anh
+            int x = 146;
+            for (int i = 0; i < 13; i++)
+            {
+                pictureBoxes[i].Image = player[i].getimg();
+            }
+            for (int i = 0; i < 13; i++)
+            {
+                pictureBoxes[i].Location = new Point(x,353);
+                x += 26;
+            }
+            for (int i = 0;i<13; i++)
+            {
+                pictureBoxes[i].Show();
+            }
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
