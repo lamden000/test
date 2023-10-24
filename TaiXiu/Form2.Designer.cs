@@ -234,6 +234,7 @@
             Controls.Add(pictureBox2);
             Controls.Add(button2);
             Controls.Add(pictureBox1);
+            MaximizeBox = false;
             Name = "Form2";
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();

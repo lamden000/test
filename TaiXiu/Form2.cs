@@ -108,7 +108,7 @@ namespace TaiXiu
         string LoaiBai = new string("0");
         #endregion
         #region My functions
-        void Select(Card[] Cards,ref PictureBox a, int boxi)
+        void Select(Card[] Cards, ref PictureBox a, int boxi)
         {
             if (isSelected[boxi - 1] == 0)
             {
@@ -120,7 +120,7 @@ namespace TaiXiu
             {
                 isSelected[boxi - 1] = 0;
                 selectedn--;
-                a.Top += 10;             
+                a.Top += 10;
             }
         }
         string KTLoaiBai(Card[] Player)
@@ -227,7 +227,7 @@ namespace TaiXiu
                         Player[j] = temp;
                     }
             }
-            
+
         }
         #endregion
         #region event handle
@@ -256,14 +256,14 @@ namespace TaiXiu
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            Select(player,ref pictureBox1, 1);
+            Select(player, ref pictureBox1, 1);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             playern = 13;
             selectedn = 0;
-            PictureBox[] pictureBoxes= { pictureBox1,pictureBox2,pictureBox3,pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12,pictureBox13 };
+            PictureBox[] pictureBoxes = { pictureBox1, pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
             Card[] desk = { c2C, c2S, c2D, c2H, c3C, c3D, c3H, c3S, c4C, c4D, c4H, c4S, c5C, c5D, c5H, c5S, c6C, c6D, c6H, c6S, c7C, c7D, c7S, c7H, c8C, c8D, c8H, c8S, c9C, c9D, c9H, c9S, c10C, c10D, c10H, c10S, cJC, cJD, cJH, cJS, cQC, cQD, cQH, cQS, cKS, cKH, cKD, cKC, cAS, cAD, cAH, cAC };
             int[] deski = new int[52];
             Random rand = new Random();
@@ -296,10 +296,10 @@ namespace TaiXiu
             }
             for (int i = 0; i < 13; i++)
             {
-                pictureBoxes[i].Location = new Point(x,353);
+                pictureBoxes[i].Location = new Point(x, 353);
                 x += 26;
             }
-            for (int i = 0;i<13; i++)
+            for (int i = 0; i < 13; i++)
             {
                 pictureBoxes[i].Show();
             }
@@ -379,7 +379,6 @@ namespace TaiXiu
             MessageBox.Show(KTLoaiBai(player));
             PictureBox[] pictureBoxes = { pictureBox1, pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
             int x = 266;
-            int y = 160;
             for (int i = 0; i < 13; i++)
             {
                 if (isSelected[i] == -1)

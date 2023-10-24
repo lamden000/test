@@ -68,6 +68,7 @@
             ClientSize = new Size(594, 297);
             Controls.Add(button2);
             Controls.Add(button1);
+            MaximizeBox = false;
             Name = "Form1";
             Text = "Menu";
             ResumeLayout(false);
