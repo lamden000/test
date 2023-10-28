@@ -138,19 +138,21 @@ namespace TaiXiu
                     j++;
                 }
             }
-            if (selectedn == 3)
+            int equal=1;
+            for(int i=0;i<selectedn-1;i++)
             {
-                if (value[0] == value[1] && value[1] == value[2])
+                if (value[i] != value[i+1])
+                {
+                    equal = 0;
+                }
+            }
+            if (equal == 1)
+            {
+                if (selectedn == 3)
                     return "Tam";
-            }
-            if (selectedn == 4)
-            {
-                if (value[0] == value[1] && value[1] == value[2] && value[2] == value[3])
+                if (selectedn == 4)
                     return "Tu Quy";
-            }
-            if (selectedn == 2)
-            {
-                if (value[0] == value[1])
+                if (selectedn == 2)
                     return "Doi";
             }
             for (int i = 0; i < selectedn - 1; i++)
