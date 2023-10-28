@@ -138,6 +138,7 @@ namespace TaiXiu
                     j++;
                 }
             }
+
             int equal=1;
             for(int i=0;i<selectedn-1;i++)
             {
@@ -155,16 +156,7 @@ namespace TaiXiu
                 if (selectedn == 2)
                     return "Doi";
             }
-            for (int i = 0; i < selectedn - 1; i++)
-                for (int a = i + 1; a < selectedn; a++)
-                {
-                    if (value[a] < value[i])
-                    {
-                        temp = value[i];
-                        value[i] = value[a];
-                        value[a] = temp;
-                    }
-                }
+  
             if (selectedn > 2)
             {
                 int laSanh = 1;
@@ -178,6 +170,7 @@ namespace TaiXiu
                     return "Sanh";
                 }
             }
+
             if (selectedn > 5)
             {
                 int isdoithong = 0;
@@ -214,6 +207,7 @@ namespace TaiXiu
                         return "6 doi thong";
                 }
             }
+
             return "Khong Danh Duoc";
         }
         void xepBai(Card[] Player)
