@@ -4,6 +4,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Resources.Extensions;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,6 +22,8 @@ namespace TaiXiu
         public Form2()
         {
             InitializeComponent();
+            CheckForIllegalCrossThreadCalls = false;
+            Connect();
         }
 
         class Card
@@ -41,71 +47,76 @@ namespace TaiXiu
             {
                 return image;
             }
-            public int getValue()
-            { return value; }
+            public int getValue() { return value; }
+            public int getTypeid() { return typeid; }
         }
         #endregion
         #region 52 cards definition
-        Card c2C = new Card(16, 1, Image.FromFile("2C.png"));
-        Card c2S = new Card(16, 2, Image.FromFile("2S.png"));
+        Card c2C = new Card(16, 2, Image.FromFile("2C.png"));
+        Card c2S = new Card(16, 1, Image.FromFile("2S.png"));
         Card c2D = new Card(16, 3, Image.FromFile("2D.png"));
         Card c2H = new Card(16, 4, Image.FromFile("2H.png"));
-        Card c3C = new Card(3, 1, Image.FromFile("3C.png"));
-        Card c3S = new Card(3, 2, Image.FromFile("3S.png"));
+        Card c3C = new Card(3, 2, Image.FromFile("3C.png"));
+        Card c3S = new Card(3, 1, Image.FromFile("3S.png"));
         Card c3D = new Card(3, 3, Image.FromFile("3D.png"));
         Card c3H = new Card(3, 4, Image.FromFile("3H.png"));
-        Card c4C = new Card(4, 1, Image.FromFile("4C.png"));
-        Card c4S = new Card(4, 2, Image.FromFile("4S.png"));
+        Card c4C = new Card(4, 2, Image.FromFile("4C.png"));
+        Card c4S = new Card(4, 1, Image.FromFile("4S.png"));
         Card c4D = new Card(4, 3, Image.FromFile("4D.png"));
         Card c4H = new Card(4, 4, Image.FromFile("4H.png"));
-        Card c5C = new Card(5, 1, Image.FromFile("5C.png"));
-        Card c5S = new Card(5, 2, Image.FromFile("5S.png"));
+        Card c5C = new Card(5, 2, Image.FromFile("5C.png"));
+        Card c5S = new Card(5, 1, Image.FromFile("5S.png"));
         Card c5D = new Card(5, 3, Image.FromFile("5D.png"));
         Card c5H = new Card(5, 4, Image.FromFile("5H.png"));
-        Card c6C = new Card(6, 1, Image.FromFile("6C.png"));
-        Card c6S = new Card(6, 2, Image.FromFile("6S.png"));
+        Card c6C = new Card(6, 2, Image.FromFile("6C.png"));
+        Card c6S = new Card(6, 1, Image.FromFile("6S.png"));
         Card c6D = new Card(6, 3, Image.FromFile("6D.png"));
         Card c6H = new Card(6, 4, Image.FromFile("6H.png"));
-        Card c7C = new Card(7, 1, Image.FromFile("7C.png"));
-        Card c7S = new Card(7, 2, Image.FromFile("7S.png"));
+        Card c7C = new Card(7, 2, Image.FromFile("7C.png"));
+        Card c7S = new Card(7, 1, Image.FromFile("7S.png"));
         Card c7D = new Card(7, 3, Image.FromFile("7D.png"));
         Card c7H = new Card(7, 4, Image.FromFile("7H.png"));
-        Card c8C = new Card(8, 1, Image.FromFile("8C.png"));
-        Card c8S = new Card(8, 2, Image.FromFile("8S.png"));
+        Card c8C = new Card(8, 2, Image.FromFile("8C.png"));
+        Card c8S = new Card(8, 1, Image.FromFile("8S.png"));
         Card c8D = new Card(8, 3, Image.FromFile("8D.png"));
         Card c8H = new Card(8, 4, Image.FromFile("8H.png"));
-        Card c9C = new Card(9, 1, Image.FromFile("9C.png"));
-        Card c9S = new Card(9, 2, Image.FromFile("9S.png"));
+        Card c9C = new Card(9, 2, Image.FromFile("9C.png"));
+        Card c9S = new Card(9, 1, Image.FromFile("9S.png"));
         Card c9D = new Card(9, 3, Image.FromFile("9D.png"));
         Card c9H = new Card(9, 4, Image.FromFile("9H.png"));
-        Card c10C = new Card(10, 1, Image.FromFile("10C.png"));
-        Card c10S = new Card(10, 2, Image.FromFile("10S.png"));
+        Card c10C = new Card(10, 2, Image.FromFile("10C.png"));
+        Card c10S = new Card(10, 1, Image.FromFile("10S.png"));
         Card c10D = new Card(10, 3, Image.FromFile("10D.png"));
         Card c10H = new Card(10, 4, Image.FromFile("10H.png"));
-        Card cJC = new Card(11, 1, Image.FromFile("JC.png"));
-        Card cJS = new Card(11, 2, Image.FromFile("JS.png"));
+        Card cJC = new Card(11, 2, Image.FromFile("JC.png"));
+        Card cJS = new Card(11, 1, Image.FromFile("JS.png"));
         Card cJD = new Card(11, 3, Image.FromFile("JD.png"));
         Card cJH = new Card(11, 4, Image.FromFile("JH.png"));
-        Card cQC = new Card(12, 1, Image.FromFile("QC.png"));
-        Card cQS = new Card(12, 2, Image.FromFile("QS.png"));
+        Card cQC = new Card(12, 2, Image.FromFile("QC.png"));
+        Card cQS = new Card(12, 1, Image.FromFile("QS.png"));
         Card cQD = new Card(12, 3, Image.FromFile("QD.png"));
         Card cQH = new Card(12, 4, Image.FromFile("QH.png"));
-        Card cKC = new Card(13, 1, Image.FromFile("KC.png"));
-        Card cKS = new Card(13, 2, Image.FromFile("KS.png"));
+        Card cKC = new Card(13, 2, Image.FromFile("KC.png"));
+        Card cKS = new Card(13, 1, Image.FromFile("KS.png"));
         Card cKD = new Card(13, 3, Image.FromFile("KD.png"));
         Card cKH = new Card(13, 4, Image.FromFile("KH.png"));
-        Card cAC = new Card(14, 1, Image.FromFile("AC.png"));
-        Card cAS = new Card(14, 2, Image.FromFile("AS.png"));
+        Card cAC = new Card(14, 2, Image.FromFile("AC.png"));
+        Card cAS = new Card(14, 1, Image.FromFile("AS.png"));
         Card cAD = new Card(14, 3, Image.FromFile("AD.png"));
         Card cAH = new Card(14, 4, Image.FromFile("AH.png"));
         #endregion
         #region global variable;
         int[] isSelected = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         Card[] player = new Card[13];
-        Card[] player2 = new Card[13];
         int playern = new int();
         int selectedn = new int();
-        string LoaiBai = new string("0");
+        //Bai tren ban
+        string Ttype; //Loai bai
+        int Tvalue0;// gia tri la bai lon nhat 
+        int Tvalue1;// kieu cua la bai lon nhat
+        int cardsn;// so bai tren ban
+        int turn;//luot
+        int yourturn;//luot cua minh
         #endregion
         #region My functions
         void Select(Card[] Cards, ref PictureBox a, int boxi)
@@ -139,10 +150,10 @@ namespace TaiXiu
                 }
             }
 
-            int equal=1;
-            for(int i=0;i<selectedn-1;i++)
+            int equal = 1;
+            for (int i = 0; i < selectedn - 1; i++)
             {
-                if (value[i] != value[i+1])
+                if (value[i] != value[i + 1])
                 {
                     equal = 0;
                 }
@@ -156,7 +167,7 @@ namespace TaiXiu
                 if (selectedn == 2)
                     return "Doi";
             }
-  
+
             if (selectedn > 2)
             {
                 int laSanh = 1;
@@ -200,15 +211,140 @@ namespace TaiXiu
                     if (selectedn == 6)
                         return "Doi Thong";
                     else if (selectedn == 8)
-                        return "4 doi thong";
+                        return "4 Doi Thong";
                     else if (selectedn == 10)
-                        return "5 doi thong";
-                    else if (selectedn == 12)
-                        return "6 doi thong";
+                        return "5 Doi Thong";
                 }
             }
 
             return "Khong Danh Duoc";
+        }
+
+        int Chophepdanh()
+        {
+            if (turn != yourturn)
+                return 0;
+            if (selectedn == 0)
+                return 0;
+            if (KTLoaiBai(player).CompareTo("Khong Danh Duoc") == 0)
+                return 0;
+            if (Ttype == "0")
+                return 1;
+            int[] values = new int[selectedn];
+            int[] types = new int[selectedn];
+            int j = 0;
+            for (int i = 0; i < 13; i++)
+            {
+                if (isSelected[i] == 1)
+                {
+                    values[j] = player[i].getValue();
+                    types[j] = player[i].getTypeid();
+                    j++;
+                }
+            }
+            j--;          
+            //Tu quy
+            if (KTLoaiBai(player).CompareTo("Tu quy") == 0)
+            {
+                if (Ttype.CompareTo("Le") == 0 && Tvalue0 == 16)
+                {
+                    Ttype = "Tu Quy";
+                    Tvalue0 = values[0];
+                    return 1;
+                }
+                if (values[0] > Tvalue0 && Ttype.CompareTo("Tu Quy") == 0)
+                {
+                    Tvalue0 = values[0];
+                    return 1;
+                }
+                return 0;
+            }
+            //doi thong
+            if (KTLoaiBai(player).CompareTo("Doi Thong") == 0)
+            {
+                if (types[j] < types[j - 1])
+                    types[j] = types[j - 1];
+                if (Ttype.CompareTo("Le") == 0 && Tvalue0 == 16)
+                {
+                    Ttype = "Doi Thong";
+                    Tvalue0 = values[j];
+                    Tvalue1 = types[j];
+                    return 1;
+                }
+                if (Ttype.CompareTo("Doi Thong") == 0)
+                {
+                    if (Tvalue0 == values[j] && Tvalue1 < types[j])
+                    {
+                        Tvalue1 = types[j];
+                        return 1;
+                    }
+                    if (Tvalue0 < values[j])
+                    {
+                        Tvalue0 = values[j];
+                        Tvalue1 = types[j];
+                        return 1;
+                    }
+                }
+                return 0;
+            }
+            //          
+            if (KTLoaiBai(player).CompareTo(Ttype) != 0)
+                return 0;
+            if (cardsn != selectedn)
+                return 0;
+            // Le          
+            if (Ttype.CompareTo("Le") == 0)
+            {
+                if (types[0] > Tvalue1 && values[0] == Tvalue0)
+                {
+                    Tvalue1 = types[0];
+                    return 1;
+                }
+                if (Tvalue0 < values[0])
+                {
+                    Tvalue1 = types[0];
+                    Tvalue0 = values[0];
+                    return 1;
+                }
+                return 0;
+            }         
+            // Doi
+            if (Ttype.CompareTo("Doi") == 0)
+            {
+                if (types[0] < types[1])
+                    types[0] = types[1];
+                if (types[0] > Tvalue1 && values[0] == Tvalue0)
+                {
+                    Tvalue1 = types[0];
+                    return 1;
+                }
+                if (Tvalue0 < values[0])
+                {
+                    Tvalue0 = values[0];
+                    return 1;
+                }
+                return 0;
+            }
+            //Tam
+            if (Ttype.CompareTo("Tam") == 0)
+            {
+                if (values[0] > Tvalue0)
+                {
+                    Tvalue0 = values[0];
+                    return 1;
+                }
+                return 0;
+            }
+            // Sanh
+            if (Ttype.CompareTo("Sanh") == 0)
+            {
+                if (values[j] > Tvalue0)
+                    return 1;
+                else if (values[j] == Tvalue0 && types[j] > Tvalue1)
+                    return 1;
+                return 0;
+            }
+            return 0;
         }
         void xepBai(Card[] Player)
         {
@@ -227,10 +363,6 @@ namespace TaiXiu
         }
         #endregion
         #region event handle
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -247,7 +379,20 @@ namespace TaiXiu
             pictureBox11.Hide();
             pictureBox12.Hide();
             pictureBox13.Hide();
-
+            player2.Image = Image.FromFile("b1fv.png");
+            player3.Image = Image.FromFile("b1fv.png");
+            player4.Image = Image.FromFile("b1fv.png");
+            player2.Hide();
+            player3.Hide();
+            player4.Hide();
+            button1.Hide();
+            checkBox1.Hide();
+            checkBox2.Hide();
+            checkBox3.Hide();
+            checkBox4.Hide();
+            PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
+            for (int i = 0; i < 13; i++)
+                pictureBoxes[i].Hide();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -257,48 +402,8 @@ namespace TaiXiu
 
         private void button2_Click(object sender, EventArgs e)
         {
-            playern = 13;
-            selectedn = 0;
-            PictureBox[] pictureBoxes = { pictureBox1, pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
-            Card[] desk = { c2C, c2S, c2D, c2H, c3C, c3D, c3H, c3S, c4C, c4D, c4H, c4S, c5C, c5D, c5H, c5S, c6C, c6D, c6H, c6S, c7C, c7D, c7S, c7H, c8C, c8D, c8H, c8S, c9C, c9D, c9H, c9S, c10C, c10D, c10H, c10S, cJC, cJD, cJH, cJS, cQC, cQD, cQH, cQS, cKS, cKH, cKD, cKC, cAS, cAD, cAH, cAC };
-            int[] deski = new int[52];
-            Random rand = new Random();
-            int random;
-            for (int i = 0; i < 13; i++)
-            {
-                isSelected[i] = 0;
-            }
-            for (int i = 0; i < 52; i++)
-            {
-                deski[i] = 1;
-            }
-            //Chia Bai
-            for (int i = 0; i < 13; i++)
-            {
-                random = rand.Next(0, 51);
-                if (deski[random] != 0)
-                {
-                    player[i] = desk[random];
-                    deski[random] = 0;
-                }
-                else i -= 1;
-            }
-            xepBai(player);
-            //lay anh
-            int x = 146;
-            for (int i = 0; i < 13; i++)
-            {
-                pictureBoxes[i].Image = player[i].getimg();
-            }
-            for (int i = 0; i < 13; i++)
-            {
-                pictureBoxes[i].Location = new Point(x, 353);
-                x += 26;
-            }
-            for (int i = 0; i < 13; i++)
-            {
-                pictureBoxes[i].Show();
-            }
+            client.Send(serialize("Ready"));
+            button2.Hide();
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
@@ -363,40 +468,44 @@ namespace TaiXiu
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            if (selectedn == 0)
+
+            if (Chophepdanh() == 1)
             {
-                return;
-            }
-            if (KTLoaiBai(player).CompareTo("Khong Danh Duoc") == 0)
-            {
-                MessageBox.Show(KTLoaiBai(player));
-                return;
-            }
-            MessageBox.Show(KTLoaiBai(player));
-            PictureBox[] pictureBoxes = { pictureBox1, pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
-            int x = 266;
-            for (int i = 0; i < 13; i++)
-            {
-                if (isSelected[i] == -1)
-                    pictureBoxes[i].Hide();
-                if (isSelected[i] == 1)
+                PictureBox[] pictureBoxes = { pictureBox1, pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
+                string str = "ThongTinBai-" + KTLoaiBai(player) + "-";
+                for (int i = 0; i < 13; i++)
                 {
-                    isSelected[i] = -1;
-                    pictureBoxes[i].Location = new Point(x, 160);
-                    x += 24;
+                    if (isSelected[i] == 1)
+                        pictureBoxes[i].Hide();
+                    if (isSelected[i] == 1)
+                    {
+                        isSelected[i] = -1;
+                        str = str + player[i].getValue().ToString() + "_" + player[i].getTypeid().ToString() + ",";
+                    }
+                }
+                checkBox4.Hide();
+                client.Send(serialize(str));
+                playern -= selectedn;
+                selectedn = 0;
+                if (playern == 0)
+                {
+                    str = "Win";
+                    client.Send(serialize(str));
                 }
             }
-            playern -= selectedn;
-            selectedn = 0;
-            if (playern == 0)
+            else
             {
-                MessageBox.Show("You Win");
+                return;
             }
         }
-
-        private void pictureBox14_Click(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
-
+            if (turn == yourturn&&Ttype.CompareTo("0")!=0)
+            {
+                string str = "Skip";
+                client.Send(serialize(str));
+                checkBox4.Hide();
+            }
         }
         private void button3_Click(object sender, EventArgs e)
         {
@@ -405,6 +514,173 @@ namespace TaiXiu
             form.ShowDialog();
             this.Close();
         }
+        #endregion
+        #region client
+        IPEndPoint IP;
+        Socket client;
+        Thread listen;
+        void Connect()
+        {
+            IP = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 9999);
+            client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
+            try
+            {
+                client.Connect(IP);
+            }
+            catch
+            {
+                MessageBox.Show("Khong the ket noi", "Loi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            listen = new Thread(Recieve);
+            listen.IsBackground = true;
+            listen.Start();
+        }
+        void Close()
+        {
+            client.Close();
+        }
+
+        void Recieve()
+        {
+            while (true)
+            {
+                try
+                {
+                    byte[] data = new byte[1024 * 5000];
+                    client.Receive(data);
+                    string str = (string)deserialize(data);
+                    string[] strings = str.Split('-');
+                    Card[] deck = { c3S, c3C, c3D, c3H, c4S, c4C, c4D, c4H, c5S, c5C, c5D, c5H, c6S, c6C, c6D, c6H, c7S, c7C, c7D, c7H, c8S, c8C, c8D, c8H, c9S, c9C, c9D, c9H, c10S, c10C, c10D, c10H, cJS, cJC, cJD, cJH, cQS, cQC, cQD, cQH, cQS, cKC, cKD, cKH, cAS, cAC, cAD, cAH, c2S, c2C, c2D, c2H };
+                    //
+                    if (strings[0].CompareTo("PhatBai") == 0)
+                    {
+                        playern = 13;
+                        PictureBox[] pictureBoxes = { pictureBox1, pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13, player2, player3, player4 };
+                        string[] strings2 = strings[1].Split(",");
+                        for (int i = 0; i < 13; i++)
+                        {
+                            player[i] = deck[int.Parse(strings2[i])];
+                        }
+                        xepBai(player);
+                        int x = 146;
+                        for (int i = 0; i < 13 + int.Parse(strings2[13]) - 1; i++)
+                        {
+                            if (i < 13)
+                            {
+                                pictureBoxes[i].Image = player[i].getimg();
+                                pictureBoxes[i].Location = new Point(x, 353);
+                                x += 24;
+                            }
+                            pictureBoxes[i].Show();
+                        }
+                        yourturn = int.Parse(strings[2]);
+                        Ttype = strings[3];
+                        turn = int.Parse(strings[4]);
+                        button1.Show();
+                    }
+                    //
+                    else if (strings[0].CompareTo("ThongTinBai") == 0)
+                    {
+                        PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
+                        for (int i = 0; i < 13; i++)
+                            pictureBoxes[i].Hide();
+                        string[] strings2 = strings[2].Split(',');
+                        string[] strings3 = new string[2];
+                        Ttype = strings[1];
+                        turn = int.Parse(strings.Last());
+                        cardsn = strings2.Length - 1;
+                        int[] values = new int[cardsn];
+                        int[] types = new int[cardsn];                                             
+                        for (int i = 0; i < cardsn; i++)
+                        {
+                            strings3 = strings2[i].Split("_");
+                            values[i] = int.Parse(strings3[0]);
+                            types[i] = int.Parse(strings3[1]);
+                        }
+                        // lay anh
+                        int x = 266;
+                        int a;
+                        for (int i = 0; i < cardsn; i++)
+                        {
+                            x += 24;
+                            if (values[cardsn - 1] != 16)
+                            {
+                                a = (values[i] - 3) * 4 + types[i]-1;
+                                pictureBoxes[i].Image = deck[a].getimg();
+                            }
+                            else
+                            {
+                                a = (15 - 3) * 4 + types[i]-1 ;
+                                pictureBoxes[i].Image = deck[a].getimg();
+                            }
+                            pictureBoxes[i].Show();
+                        }
+                        //lay value0 va value1
+                        Tvalue0 = values[cardsn-1];
+                        if (Ttype.CompareTo("Le") == 0)
+                        {
+                                Tvalue1 = types[0];
+                        }
+                        else if (Ttype.CompareTo("Doi") == 0)
+                        {
+                            if (types[1] > types[0])
+                                Tvalue1 = types[1];
+                            else Tvalue1 = types[0];
+                        }
+                        else if (Ttype.Contains("Doi Thong"))
+                        {
+                            if (types[cardsn - 1] > types[cardsn - 2])
+                                Tvalue1 = types[cardsn - 1];
+                            else Tvalue1 = types[cardsn - 2];
+                        }
+                        else if (Ttype.CompareTo("Sanh") == 0)
+                        {
+                            Tvalue1 = types[cardsn - 1];
+                        }
+                        // MessageBox.Show(Ttype+"-"+Tvalue0+"-"+Tvalue1+"-"+cardsn);
+                    }
+                    //ket thuc
+                    else if (strings[0].CompareTo("GameEnd") == 0)
+                    {
+                        button2.Show();
+                        yourturn = -1;
+                        MessageBox.Show(strings[1]);
+                    }
+                    //bo luot
+                    else if (strings[0].CompareTo("Skip") == 0)
+                    {
+                        if (strings.Length > 2)
+                        {
+                            Ttype = strings[1];
+                            turn = int.Parse(strings[2]);
+                        }
+                        else 
+                        {
+                            turn = int.Parse(strings[1]);
+                        }
+                    }
+                    if (turn == yourturn)
+                    {
+                        checkBox4.Show();
+                    }
+                }
+                catch { return; }
+            }
+        }
+        byte[] serialize(object o)
+        {
+            MemoryStream ms = new MemoryStream();
+            BinaryFormatter bf = new BinaryFormatter();
+            bf.Serialize(ms, o);
+            return ms.ToArray();
+        }
+        object deserialize(byte[] data)
+        {
+            MemoryStream ms = new MemoryStream(data);
+            BinaryFormatter bf = new BinaryFormatter();
+            return bf.Deserialize(ms);
+        }
+        #endregion      
     }
-    #endregion
 }

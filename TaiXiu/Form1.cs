@@ -17,7 +17,7 @@ namespace TaiXiu
             Form2 form2 = new Form2();
             this.Hide();
             form2.ShowDialog();
-            this.Close();
+            this.Close();          
         }
     }
 }
