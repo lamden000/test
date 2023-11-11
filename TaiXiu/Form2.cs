@@ -242,7 +242,7 @@ namespace TaiXiu
                     j++;
                 }
             }
-            j--;          
+            j--;
             //Tu quy
             if (KTLoaiBai(player).CompareTo("Tu quy") == 0)
             {
@@ -307,7 +307,7 @@ namespace TaiXiu
                     return 1;
                 }
                 return 0;
-            }         
+            }
             // Doi
             if (Ttype.CompareTo("Doi") == 0)
             {
@@ -500,7 +500,7 @@ namespace TaiXiu
         }
         private void button4_Click(object sender, EventArgs e)
         {
-            if (turn == yourturn&&Ttype.CompareTo("0")!=0)
+            if (turn == yourturn && Ttype.CompareTo("0") != 0)
             {
                 string str = "Skip";
                 client.Send(serialize(str));
@@ -510,6 +510,7 @@ namespace TaiXiu
         private void button3_Click(object sender, EventArgs e)
         {
             Form1 form = new Form1();
+            client.Close();
             this.Hide();
             form.ShowDialog();
             this.Close();
@@ -591,7 +592,7 @@ namespace TaiXiu
                         turn = int.Parse(strings.Last());
                         cardsn = strings2.Length - 1;
                         int[] values = new int[cardsn];
-                        int[] types = new int[cardsn];                                             
+                        int[] types = new int[cardsn];
                         for (int i = 0; i < cardsn; i++)
                         {
                             strings3 = strings2[i].Split("_");
@@ -606,21 +607,21 @@ namespace TaiXiu
                             x += 24;
                             if (values[cardsn - 1] != 16)
                             {
-                                a = (values[i] - 3) * 4 + types[i]-1;
+                                a = (values[i] - 3) * 4 + types[i] - 1;
                                 pictureBoxes[i].Image = deck[a].getimg();
                             }
                             else
                             {
-                                a = (15 - 3) * 4 + types[i]-1 ;
+                                a = (15 - 3) * 4 + types[i] - 1;
                                 pictureBoxes[i].Image = deck[a].getimg();
                             }
                             pictureBoxes[i].Show();
                         }
                         //lay value0 va value1
-                        Tvalue0 = values[cardsn-1];
+                        Tvalue0 = values[cardsn - 1];
                         if (Ttype.CompareTo("Le") == 0)
                         {
-                                Tvalue1 = types[0];
+                            Tvalue1 = types[0];
                         }
                         else if (Ttype.CompareTo("Doi") == 0)
                         {
@@ -655,7 +656,7 @@ namespace TaiXiu
                             Ttype = strings[1];
                             turn = int.Parse(strings[2]);
                         }
-                        else 
+                        else
                         {
                             turn = int.Parse(strings[1]);
                         }
@@ -681,6 +682,7 @@ namespace TaiXiu
             BinaryFormatter bf = new BinaryFormatter();
             return bf.Deserialize(ms);
         }
-        #endregion      
+        #endregion
+
     }
 }

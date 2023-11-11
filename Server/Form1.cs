@@ -68,7 +68,7 @@ namespace Server
                     if (strings[0].CompareTo("Ready") == 0)
                     {
                         ReadyP++;
-                        if (ReadyP == clients.Count && ReadyP > 1)
+                        if (ReadyP >= clients.Count() && clients.Count()>1)
                         {
                             PhatBai();
                             ReadyP = 0;
