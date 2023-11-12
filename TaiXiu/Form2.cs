@@ -531,12 +531,18 @@ namespace TaiXiu
                     string str = (string)deserialize(data);
                     string[] strings = str.Split('-');
                     Card[] deck = { c3S, c3C, c3D, c3H, c4S, c4C, c4D, c4H, c5S, c5C, c5D, c5H, c6S, c6C, c6D, c6H, c7S, c7C, c7D, c7H, c8S, c8C, c8D, c8H, c9S, c9C, c9D, c9H, c10S, c10C, c10D, c10H, cJS, cJC, cJD, cJH, cQS, cQC, cQD, cQH, cQS, cKC, cKD, cKH, cAS, cAC, cAD, cAH, c2S, c2C, c2D, c2H };
-                    //phat bai
+                    //                  
+                    //
                     if (strings[0].CompareTo("PhatBai") == 0)
                     {
                         playern = 13;
-                        PictureBox[] pictureBoxes = { pictureBox1, pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13, player2, player3, player4 };
+                        PictureBox[] pictureBoxes2 = { pictureBox1, pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13, player2, player3, player4 };
+                        PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
                         string[] strings2 = strings[1].Split(",");
+                        //
+                        for (int i = 0; i < 13; i++)
+                            pictureBoxes[i].Hide();
+                        //
                         for (int i = 0; i < 13; i++)
                         {
                             player[i] = deck[int.Parse(strings2[i])];
@@ -547,11 +553,11 @@ namespace TaiXiu
                         {
                             if (i < 13)
                             {
-                                pictureBoxes[i].Image = player[i].getimg();
-                                pictureBoxes[i].Location = new Point(x, 353);
+                                pictureBoxes2[i].Image = player[i].getimg();
+                                pictureBoxes2[i].Location = new Point(x, 353);
                                 x += 24;
                             }
-                            pictureBoxes[i].Show();
+                            pictureBoxes2[i].Show();
                         }
                         yourturn = int.Parse(strings[2]);
                         Ttype = strings[3];
@@ -561,12 +567,9 @@ namespace TaiXiu
                         label1.Show();
                         button4.Show();
                     }
-                    //thong tin bai duoc danh
+                    //
                     else if (strings[0].CompareTo("ThongTinBai") == 0)
                     {
-                        PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
-                        for (int i = 0; i < 13; i++)
-                            pictureBoxes[i].Hide();
                         string[] strings2 = strings[2].Split(',');
                         string[] strings3 = new string[2];
                         Ttype = strings[1];
@@ -574,6 +577,14 @@ namespace TaiXiu
                         cardsn = strings2.Length - 1;
                         int[] values = new int[cardsn];
                         int[] types = new int[cardsn];
+                        PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
+                        //
+                        for (int i = 0; i < 13; i++)
+                        {
+                            isSelected[i] = 0;
+                            pictureBoxes[i].Hide();
+                        }
+                        //
                         for (int i = 0; i < cardsn; i++)
                         {
                             strings3 = strings2[i].Split("_");
@@ -621,7 +632,7 @@ namespace TaiXiu
                             Tvalue1 = types[cardsn - 1];
                         }
                     }
-                    //ket thuc game
+                    //ket thuc
                     else if (strings[0].CompareTo("GameEnd") == 0)
                     {
                         button2.Show();
@@ -658,17 +669,24 @@ namespace TaiXiu
                     {
                         turn = int.Parse(strings[1]);
                     }
-                    //
-                    //
-                    if (turn == yourturn)
-                        checkBox4.Show();
-                    else checkBox4.Hide();
-                    if (skipped == 1)
-                        BoLuot();
+
+                    if (strings[0].CompareTo("ReturnSanSangButton") == 0)
+                    {
+                        button2.Show();
+                    }
+
+
+                    else
+                    {
+                        if (turn == yourturn)
+                            checkBox4.Show();
+                        else checkBox4.Hide();
+                        if (skipped == 1)
+                            BoLuot();
+                    }
                 }
                 catch
                 {
-                    MessageBox.Show("loi");
                     return;
                 }
             }
