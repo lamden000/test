@@ -67,6 +67,7 @@
             pic11 = new PictureBox();
             pic12 = new PictureBox();
             pic13 = new PictureBox();
+            label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
@@ -445,12 +446,22 @@
             pic13.TabIndex = 37;
             pic13.TabStop = false;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(522, 421);
+            label1.Name = "label1";
+            label1.Size = new Size(50, 20);
+            label1.TabIndex = 38;
+            label1.Text = "player";
+            // 
             // Form2
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             ClientSize = new Size(800, 450);
+            Controls.Add(label1);
             Controls.Add(pic13);
             Controls.Add(pic12);
             Controls.Add(pic11);
@@ -563,6 +574,7 @@
         private PictureBox pic11;
         private PictureBox pic12;
         private PictureBox pic13;
+        private Label label1;
     }
 
 

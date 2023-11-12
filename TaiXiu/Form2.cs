@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Reflection.Emit;
 using System.Resources.Extensions;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
@@ -110,6 +111,7 @@ namespace TaiXiu
         Card[] player = new Card[13];
         int playern = new int();
         int selectedn = new int();
+        int skipped=0;
         //Bai tren ban
         string Ttype; //Loai bai
         int Tvalue0;// gia tri la bai lon nhat 
@@ -209,11 +211,11 @@ namespace TaiXiu
                 if (isdoithong == 1)
                 {
                     if (selectedn == 6)
-                        return "Doi Thong";
+                        return "Doi Thong_3";
                     else if (selectedn == 8)
-                        return "4 Doi Thong";
+                        return "Doi Thong_4";
                     else if (selectedn == 10)
-                        return "5 Doi Thong";
+                        return "Doi Thong_5";
                 }
             }
 
@@ -244,46 +246,31 @@ namespace TaiXiu
             }
             j--;
             //Tu quy
-            if (KTLoaiBai(player).CompareTo("Tu quy") == 0)
+            if (KTLoaiBai(player).CompareTo("Tu Quy") == 0)
             {
                 if (Ttype.CompareTo("Le") == 0 && Tvalue0 == 16)
-                {
-                    Ttype = "Tu Quy";
-                    Tvalue0 = values[0];
                     return 1;
-                }
                 if (values[0] > Tvalue0 && Ttype.CompareTo("Tu Quy") == 0)
-                {
-                    Tvalue0 = values[0];
                     return 1;
-                }
                 return 0;
             }
             //doi thong
-            if (KTLoaiBai(player).CompareTo("Doi Thong") == 0)
+            if (KTLoaiBai(player).Contains("Doi Thong"))
             {
                 if (types[j] < types[j - 1])
                     types[j] = types[j - 1];
                 if (Ttype.CompareTo("Le") == 0 && Tvalue0 == 16)
-                {
-                    Ttype = "Doi Thong";
-                    Tvalue0 = values[j];
-                    Tvalue1 = types[j];
                     return 1;
-                }
-                if (Ttype.CompareTo("Doi Thong") == 0)
+                if (Ttype.Contains("Doi Thong"))
                 {
+                    int a = int.Parse(Ttype.Split("_")[1]);
+                    int b = int.Parse(KTLoaiBai(player).Split("_")[1]);
+                    if (a > b) return 0;
+                    else if (b > a) return 1;
                     if (Tvalue0 == values[j] && Tvalue1 < types[j])
-                    {
-                        Tvalue1 = types[j];
                         return 1;
-                    }
                     if (Tvalue0 < values[j])
-                    {
-                        Tvalue0 = values[j];
-                        Tvalue1 = types[j];
                         return 1;
-                    }
                 }
                 return 0;
             }
@@ -296,16 +283,9 @@ namespace TaiXiu
             if (Ttype.CompareTo("Le") == 0)
             {
                 if (types[0] > Tvalue1 && values[0] == Tvalue0)
-                {
-                    Tvalue1 = types[0];
                     return 1;
-                }
                 if (Tvalue0 < values[0])
-                {
-                    Tvalue1 = types[0];
-                    Tvalue0 = values[0];
                     return 1;
-                }
                 return 0;
             }
             // Doi
@@ -314,25 +294,16 @@ namespace TaiXiu
                 if (types[0] < types[1])
                     types[0] = types[1];
                 if (types[0] > Tvalue1 && values[0] == Tvalue0)
-                {
-                    Tvalue1 = types[0];
                     return 1;
-                }
                 if (Tvalue0 < values[0])
-                {
-                    Tvalue0 = values[0];
                     return 1;
-                }
                 return 0;
             }
             //Tam
             if (Ttype.CompareTo("Tam") == 0)
             {
                 if (values[0] > Tvalue0)
-                {
-                    Tvalue0 = values[0];
                     return 1;
-                }
                 return 0;
             }
             // Sanh
@@ -360,6 +331,16 @@ namespace TaiXiu
                     }
             }
 
+        }
+        void BoLuot()
+        {
+            if (turn == yourturn && Ttype.CompareTo("0") != 0)
+            {
+                string str = "Skip-" + skipped.ToString();
+                skipped = 1;
+                client.Send(serialize(str));
+                checkBox4.Hide();
+            }
         }
         #endregion
         #region event handle
@@ -390,6 +371,8 @@ namespace TaiXiu
             checkBox2.Hide();
             checkBox3.Hide();
             checkBox4.Hide();
+            label1.Hide();
+            button4.Hide();
             PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
             for (int i = 0; i < 13; i++)
                 pictureBoxes[i].Hide();
@@ -483,11 +466,12 @@ namespace TaiXiu
                         str = str + player[i].getValue().ToString() + "_" + player[i].getTypeid().ToString() + ",";
                     }
                 }
-                checkBox4.Hide();
-                client.Send(serialize(str));
                 playern -= selectedn;
+                checkBox4.Hide();
                 selectedn = 0;
-                if (playern == 0)
+                if (playern != 0)
+                    client.Send(serialize(str));
+                else if (playern == 0)
                 {
                     str = "Win";
                     client.Send(serialize(str));
@@ -500,17 +484,11 @@ namespace TaiXiu
         }
         private void button4_Click(object sender, EventArgs e)
         {
-            if (turn == yourturn && Ttype.CompareTo("0") != 0)
-            {
-                string str = "Skip";
-                client.Send(serialize(str));
-                checkBox4.Hide();
-            }
+            BoLuot();
         }
         private void button3_Click(object sender, EventArgs e)
         {
             Form1 form = new Form1();
-            client.Close();
             this.Hide();
             form.ShowDialog();
             this.Close();
@@ -541,7 +519,7 @@ namespace TaiXiu
         {
             client.Close();
         }
-
+        //
         void Recieve()
         {
             while (true)
@@ -553,7 +531,7 @@ namespace TaiXiu
                     string str = (string)deserialize(data);
                     string[] strings = str.Split('-');
                     Card[] deck = { c3S, c3C, c3D, c3H, c4S, c4C, c4D, c4H, c5S, c5C, c5D, c5H, c6S, c6C, c6D, c6H, c7S, c7C, c7D, c7H, c8S, c8C, c8D, c8H, c9S, c9C, c9D, c9H, c10S, c10C, c10D, c10H, cJS, cJC, cJD, cJH, cQS, cQC, cQD, cQH, cQS, cKC, cKD, cKH, cAS, cAC, cAD, cAH, c2S, c2C, c2D, c2H };
-                    //
+                    //phat bai
                     if (strings[0].CompareTo("PhatBai") == 0)
                     {
                         playern = 13;
@@ -579,8 +557,11 @@ namespace TaiXiu
                         Ttype = strings[3];
                         turn = int.Parse(strings[4]);
                         button1.Show();
+                        label1.Text = yourturn.ToString();
+                        label1.Show();
+                        button4.Show();
                     }
-                    //
+                    //thong tin bai duoc danh
                     else if (strings[0].CompareTo("ThongTinBai") == 0)
                     {
                         PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
@@ -639,14 +620,16 @@ namespace TaiXiu
                         {
                             Tvalue1 = types[cardsn - 1];
                         }
-                        // MessageBox.Show(Ttype+"-"+Tvalue0+"-"+Tvalue1+"-"+cardsn);
                     }
-                    //ket thuc
+                    //ket thuc game
                     else if (strings[0].CompareTo("GameEnd") == 0)
                     {
                         button2.Show();
                         yourturn = -1;
                         MessageBox.Show(strings[1]);
+                        label1.Hide();
+                        button4.Hide();
+                        button1.Hide();
                     }
                     //bo luot
                     else if (strings[0].CompareTo("Skip") == 0)
@@ -654,19 +637,40 @@ namespace TaiXiu
                         if (strings.Length > 2)
                         {
                             Ttype = strings[1];
-                            turn = int.Parse(strings[2]);
+                            if (skipped == 0)
+                            {
+                                string s = "SetTurn-" + yourturn.ToString();
+                                turn = yourturn;
+                                client.Send(serialize(s));
+                            }
+                            else
+                            {
+                                skipped = 0;
+                            }
                         }
                         else
                         {
                             turn = int.Parse(strings[1]);
                         }
                     }
-                    if (turn == yourturn)
+                    //                   
+                    else if (strings[0].CompareTo("SetTurn") == 0)
                     {
-                        checkBox4.Show();
+                        turn = int.Parse(strings[1]);
                     }
+                    //
+                    //
+                    if (turn == yourturn)
+                        checkBox4.Show();
+                    else checkBox4.Hide();
+                    if (skipped == 1)
+                        BoLuot();
                 }
-                catch { return; }
+                catch
+                {
+                    MessageBox.Show("loi");
+                    return;
+                }
             }
         }
         byte[] serialize(object o)
@@ -682,7 +686,9 @@ namespace TaiXiu
             BinaryFormatter bf = new BinaryFormatter();
             return bf.Deserialize(ms);
         }
-        #endregion
-
+        #endregion      
     }
 }
+ 
+
+

@@ -2,6 +2,8 @@ using System.Net.Sockets;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Media;
+using static System.Windows.Forms.LinkLabel;
+using System;
 
 namespace Server
 {
@@ -68,7 +70,7 @@ namespace Server
                     if (strings[0].CompareTo("Ready") == 0)
                     {
                         ReadyP++;
-                        if (ReadyP >= clients.Count() && clients.Count()>1)
+                        if (ReadyP >= clients.Count() && clients.Count() > 1)
                         {
                             PhatBai();
                             ReadyP = 0;
@@ -76,47 +78,51 @@ namespace Server
                     }
                     //
                     //
-                    else if (strings[0].CompareTo("ThongTinBai") == 0)
+                    else
                     {
-                        if (turn <clients.Count)
-                            turn++;
-                        else turn = 1;
-                        str = str + "-" + turn.ToString();
-                        data = serialize(str);
-                        foreach (Socket socket in clients)
-                            socket.Send(data);
-                        SkipP = 0;
-                    }
-
-                    //
-                    else if (strings[0].CompareTo("Win") == 0)
-                    {
-                        str = "GameEnd-player " + turn.ToString() + " won";
-                        data = serialize(str);
-                        foreach (Socket socket in clients)
-                            socket.Send(data);
-                    }
-                    //
-                    else if (strings[0].CompareTo("Skip") == 0)
-                    {
-                        turn++;
-                        if (turn > clients.Count)
-                            turn = 1;
-                        str ="Skip" + "-" + turn.ToString();
-                        data = serialize(str);
-                        foreach (Socket socket in clients)
-                            socket.Send(data);
-                        SkipP++;
-                        if (SkipP == clients.Count - 1)                  
+                        if (strings[0].CompareTo("ThongTinBai") == 0)
                         {
-                            str = "Skip-0-" + turn.ToString();
-                            data = serialize(str);
-                            foreach(Socket socket in clients) 
-                                socket.Send(data);
-                            SkipP = 0;
+                            if (turn < clients.Count)
+                                turn++;
+                            else turn = 1;
+                            str = str + "-" + turn.ToString();
                         }
+
+                        // thang
+                        else if (strings[0].CompareTo("Win") == 0)
+                        {
+                            str = "GameEnd-player " + turn.ToString() + " won";
+                        }
+                        // bo luot
+                        else if (strings[0].CompareTo("Skip") == 0)
+                        {
+                            turn++;
+                            if (turn > clients.Count)
+                                turn = 1;
+                            if (strings[1].CompareTo("0") == 0)
+                                SkipP++;
+                            if (SkipP != clients.Count - 1)
+                            {
+                                str = "Skip-" + turn.ToString();
+                            }
+                            else
+                            {
+                                str = "Skip-0-" + turn.ToString();
+                                SkipP = 0;
+                            }
+                        }
+                        //
+                        else if (strings[0].CompareTo("SetTurn") == 0)
+                        {
+                            turn = int.Parse(strings[1]);
+                        }
+                        //
+                        data = serialize(str);
+                        foreach (Socket socket in clients)
+                            socket.Send(data);
                     }
                 }
+
             }
             catch
             {
