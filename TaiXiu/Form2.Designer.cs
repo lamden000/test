@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
             pictureBox1 = new PictureBox();
             button2 = new Button();
@@ -50,10 +51,10 @@
             player4 = new PictureBox();
             backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             button4 = new Button();
-            checkBox1 = new CheckBox();
-            checkBox2 = new CheckBox();
-            checkBox3 = new CheckBox();
-            checkBox4 = new CheckBox();
+            turn_3 = new CheckBox();
+            turn_2 = new CheckBox();
+            turn_4 = new CheckBox();
+            turn_1 = new CheckBox();
             pic1 = new PictureBox();
             pic2 = new PictureBox();
             pic3 = new PictureBox();
@@ -68,6 +69,9 @@
             pic12 = new PictureBox();
             pic13 = new PictureBox();
             label1 = new Label();
+            timer1 = new System.Windows.Forms.Timer(components);
+            timer = new Label();
+            numberplayer = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
@@ -285,49 +289,49 @@
             button4.UseVisualStyleBackColor = true;
             button4.Click += button4_Click;
             // 
-            // checkBox1
+            // turn_3
             // 
-            checkBox1.AutoSize = true;
-            checkBox1.Checked = true;
-            checkBox1.CheckState = CheckState.Checked;
-            checkBox1.Location = new Point(435, 37);
-            checkBox1.Name = "checkBox1";
-            checkBox1.Size = new Size(18, 17);
-            checkBox1.TabIndex = 21;
-            checkBox1.UseVisualStyleBackColor = true;
+            turn_3.AutoSize = true;
+            turn_3.Checked = true;
+            turn_3.CheckState = CheckState.Checked;
+            turn_3.Location = new Point(435, 37);
+            turn_3.Name = "turn_3";
+            turn_3.Size = new Size(18, 17);
+            turn_3.TabIndex = 21;
+            turn_3.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // turn_2
             // 
-            checkBox2.AutoSize = true;
-            checkBox2.Checked = true;
-            checkBox2.CheckState = CheckState.Checked;
-            checkBox2.Location = new Point(87, 182);
-            checkBox2.Name = "checkBox2";
-            checkBox2.Size = new Size(18, 17);
-            checkBox2.TabIndex = 22;
-            checkBox2.UseVisualStyleBackColor = true;
+            turn_2.AutoSize = true;
+            turn_2.Checked = true;
+            turn_2.CheckState = CheckState.Checked;
+            turn_2.Location = new Point(87, 182);
+            turn_2.Name = "turn_2";
+            turn_2.Size = new Size(18, 17);
+            turn_2.TabIndex = 22;
+            turn_2.UseVisualStyleBackColor = true;
             // 
-            // checkBox3
+            // turn_4
             // 
-            checkBox3.AutoSize = true;
-            checkBox3.Checked = true;
-            checkBox3.CheckState = CheckState.Checked;
-            checkBox3.Location = new Point(704, 172);
-            checkBox3.Name = "checkBox3";
-            checkBox3.Size = new Size(18, 17);
-            checkBox3.TabIndex = 23;
-            checkBox3.UseVisualStyleBackColor = true;
+            turn_4.AutoSize = true;
+            turn_4.Checked = true;
+            turn_4.CheckState = CheckState.Checked;
+            turn_4.Location = new Point(704, 172);
+            turn_4.Name = "turn_4";
+            turn_4.Size = new Size(18, 17);
+            turn_4.TabIndex = 23;
+            turn_4.UseVisualStyleBackColor = true;
             // 
-            // checkBox4
+            // turn_1
             // 
-            checkBox4.AutoSize = true;
-            checkBox4.Checked = true;
-            checkBox4.CheckState = CheckState.Checked;
-            checkBox4.Location = new Point(315, 307);
-            checkBox4.Name = "checkBox4";
-            checkBox4.Size = new Size(18, 17);
-            checkBox4.TabIndex = 24;
-            checkBox4.UseVisualStyleBackColor = true;
+            turn_1.AutoSize = true;
+            turn_1.Checked = true;
+            turn_1.CheckState = CheckState.Checked;
+            turn_1.Location = new Point(315, 307);
+            turn_1.Name = "turn_1";
+            turn_1.Size = new Size(18, 17);
+            turn_1.TabIndex = 24;
+            turn_1.UseVisualStyleBackColor = true;
             // 
             // pic1
             // 
@@ -449,11 +453,33 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(522, 421);
+            label1.Location = new Point(533, 421);
             label1.Name = "label1";
             label1.Size = new Size(50, 20);
             label1.TabIndex = 38;
             label1.Text = "player";
+            // 
+            // timer1
+            // 
+            timer1.Interval = 1000;
+            timer1.Tick += timer1_Tick;
+            // 
+            // timer
+            // 
+            timer.AutoSize = true;
+            timer.Location = new Point(533, 386);
+            timer.Name = "timer";
+            timer.Size = new Size(39, 20);
+            timer.TabIndex = 39;
+            timer.Text = "time";
+            // 
+            // numberplayer
+            // 
+            numberplayer.AutoSize = true;
+            numberplayer.Location = new Point(102, 21);
+            numberplayer.Name = "numberplayer";
+            numberplayer.Size = new Size(0, 20);
+            numberplayer.TabIndex = 40;
             // 
             // Form2
             // 
@@ -461,6 +487,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             ClientSize = new Size(800, 450);
+            Controls.Add(numberplayer);
+            Controls.Add(timer);
             Controls.Add(label1);
             Controls.Add(pic13);
             Controls.Add(pic12);
@@ -475,10 +503,10 @@
             Controls.Add(pic3);
             Controls.Add(pic2);
             Controls.Add(pic1);
-            Controls.Add(checkBox4);
-            Controls.Add(checkBox3);
-            Controls.Add(checkBox2);
-            Controls.Add(checkBox1);
+            Controls.Add(turn_1);
+            Controls.Add(turn_4);
+            Controls.Add(turn_2);
+            Controls.Add(turn_3);
             Controls.Add(button4);
             Controls.Add(player4);
             Controls.Add(player3);
@@ -557,10 +585,10 @@
         private PictureBox player4;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private Button button4;
-        private CheckBox checkBox1;
-        private CheckBox checkBox2;
-        private CheckBox checkBox3;
-        private CheckBox checkBox4;
+        private CheckBox turn_3;
+        private CheckBox turn_2;
+        private CheckBox turn_4;
+        private CheckBox turn_1;
         private PictureBox pic1;
         private PictureBox pic2;
         private PictureBox pic3;
@@ -575,6 +603,9 @@
         private PictureBox pic12;
         private PictureBox pic13;
         private Label label1;
+        private System.Windows.Forms.Timer timer1;
+        private Label timer;
+        private Label numberplayer;
     }
 
 

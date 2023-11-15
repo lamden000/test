@@ -1,23 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
+﻿using System.Diagnostics.Eventing.Reader;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection.Emit;
-using System.Resources.Extensions;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
-using TaiXiu.Properties;
 
 namespace TaiXiu
 {
-    #region class
     public partial class Form2 : Form
     {
         public Form2()
@@ -26,7 +13,7 @@ namespace TaiXiu
             CheckForIllegalCrossThreadCalls = false;
             Connect();
         }
-
+        #region Card class
         class Card
         {
             int value;
@@ -108,19 +95,23 @@ namespace TaiXiu
         #endregion
         #region global variable;
         int[] isSelected = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        Card[] player = new Card[13];
-        int playern = new int();
-        int selectedn = new int();
-        int skipped=0;
-        //Bai tren ban
-        string Ttype; //Loai bai
-        int Tvalue0;// gia tri la bai lon nhat 
-        int Tvalue1;// kieu cua la bai lon nhat
-        int cardsn;// so bai tren ban
-        int turn;//luot
-        int yourturn;//luot cua minh
+        Card[] player = new Card[13];//bộ bài của người chơi
+        int playern = new int();//số bài còn lại trên tay
+        int selectedn = new int();//số bài đã chọn
+        int skipped = 0;//Biến để biết người chơi đã bỏ lượt chưa(trong 1 round)
+        int time = 0;//Thời gian đợi đánh bài
+        int ImFuckingReady = 0;// Biến để biết người chơi đã sẵn sàng chưa
+        CheckBox[] checkBoxes = new CheckBox[4]; //check box hiển thị lượt
+        //Bài trên bàn
+        string Ttype; //Loại bài
+        int Tvalue0;// Giá trị của lá bài lớn nhất
+        int Tvalue1;// Kiểu của lá bài lớn nhất
+        int cardsn;// Số bài
+        int turn = 1;//lượt đi hiện tại
+        int yourturn = 10;//lượt của mình
         #endregion
         #region My functions
+        //Hàm chọn bài
         void Select(Card[] Cards, ref PictureBox a, int boxi)
         {
             if (isSelected[boxi - 1] == 0)
@@ -136,6 +127,8 @@ namespace TaiXiu
                 a.Top += 10;
             }
         }
+
+        //Kiểm tra loại bài được chọn
         string KTLoaiBai(Card[] Player)
         {
             if (selectedn == 1)
@@ -222,6 +215,7 @@ namespace TaiXiu
             return "Khong Danh Duoc";
         }
 
+        //Kiểm bài đã chọn có phù hợp để được đánh không
         int Chophepdanh()
         {
             if (turn != yourturn)
@@ -317,6 +311,8 @@ namespace TaiXiu
             }
             return 0;
         }
+
+        //Hàm xếp bài
         void xepBai(Card[] Player)
         {
             Card temp = new Card();
@@ -332,6 +328,8 @@ namespace TaiXiu
             }
 
         }
+
+        //Hàm bỏ lượt
         void BoLuot()
         {
             if (turn == yourturn && Ttype.CompareTo("0") != 0)
@@ -339,7 +337,7 @@ namespace TaiXiu
                 string str = "Skip-" + skipped.ToString();
                 skipped = 1;
                 client.Send(serialize(str));
-                checkBox4.Hide();
+                turn_1.Hide();
             }
         }
         #endregion
@@ -367,26 +365,22 @@ namespace TaiXiu
             player3.Hide();
             player4.Hide();
             button1.Hide();
-            checkBox1.Hide();
-            checkBox2.Hide();
-            checkBox3.Hide();
-            checkBox4.Hide();
+            turn_3.Hide();
+            turn_2.Hide();
+            turn_4.Hide();
+            turn_1.Hide();
             label1.Hide();
             button4.Hide();
             PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
             for (int i = 0; i < 13; i++)
                 pictureBoxes[i].Hide();
+            timer1.Stop();
+            timer.Hide();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             Select(player, ref pictureBox1, 1);
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            client.Send(serialize("Ready"));
-            button2.Hide();
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
@@ -448,7 +442,8 @@ namespace TaiXiu
         {
             Select(player, ref pictureBox12, 12);
         }
-
+        //
+        // Nút Đánh
         private void button1_Click_1(object sender, EventArgs e)
         {
 
@@ -467,7 +462,7 @@ namespace TaiXiu
                     }
                 }
                 playern -= selectedn;
-                checkBox4.Hide();
+                turn_1.Hide();
                 selectedn = 0;
                 if (playern != 0)
                     client.Send(serialize(str));
@@ -482,16 +477,37 @@ namespace TaiXiu
                 return;
             }
         }
-        private void button4_Click(object sender, EventArgs e)
+        //Nút sẵng sàng
+        private void button2_Click(object sender, EventArgs e)
         {
-            BoLuot();
+            ImFuckingReady = 1;
+            client.Send(serialize("Ready"));
+            button2.Hide();
         }
+        //Nút menu
         private void button3_Click(object sender, EventArgs e)
         {
+            client.Close();
             Form1 form = new Form1();
             this.Hide();
             form.ShowDialog();
             this.Close();
+        }
+        //Nút bỏ lượt
+        private void button4_Click(object sender, EventArgs e)
+        {
+            BoLuot();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            timer.Show();
+            time--;
+            if (time == 0)
+                if (Ttype.CompareTo("0") != 0)
+                    BoLuot();
+                else time = 30;
+            timer.Text = time.ToString();
         }
         #endregion
         #region client
@@ -519,29 +535,31 @@ namespace TaiXiu
         {
             client.Close();
         }
-        //
+        // 
+        //Nhận dữ liệu từ server
         void Recieve()
         {
             while (true)
             {
-                try
-                {
                     byte[] data = new byte[1024 * 5000];
                     client.Receive(data);
                     string str = (string)deserialize(data);
                     string[] strings = str.Split('-');
                     Card[] deck = { c3S, c3C, c3D, c3H, c4S, c4C, c4D, c4H, c5S, c5C, c5D, c5H, c6S, c6C, c6D, c6H, c7S, c7C, c7D, c7H, c8S, c8C, c8D, c8H, c9S, c9C, c9D, c9H, c10S, c10C, c10D, c10H, cJS, cJC, cJD, cJH, cQS, cQC, cQD, cQH, cQS, cKC, cKD, cKH, cAS, cAC, cAD, cAH, c2S, c2C, c2D, c2H };
                     //                  
-                    //
+                    //Server phát bài
                     if (strings[0].CompareTo("PhatBai") == 0)
                     {
                         playern = 13;
                         PictureBox[] pictureBoxes2 = { pictureBox1, pictureBox2, pictureBox3, pictureBox4, pictureBox5, pictureBox6, pictureBox7, pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13, player2, player3, player4 };
-                        PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
+                        PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };                                          
                         string[] strings2 = strings[1].Split(",");
                         //
                         for (int i = 0; i < 13; i++)
+                        {
+                            isSelected[i] = 0;
                             pictureBoxes[i].Hide();
+                        }
                         //
                         for (int i = 0; i < 13; i++)
                         {
@@ -561,13 +579,44 @@ namespace TaiXiu
                         }
                         yourturn = int.Parse(strings[2]);
                         Ttype = strings[3];
-                        turn = int.Parse(strings[4]);
                         button1.Show();
                         label1.Text = yourturn.ToString();
                         label1.Show();
                         button4.Show();
+                        //checkbox hiển thị lượt
+                        switch (yourturn)
+                        {
+                            case 1:
+                                {
+                                    CheckBox[] checkbox1 = { turn_1, turn_2, turn_3, turn_4 };
+                                    for (int i = 0; i < 4; i++)
+                                        checkBoxes[i] = checkbox1[i];
+                                    break;
+                                }
+                            case 2:
+                                {
+                                    CheckBox[] checkbox2 = { turn_4, turn_1, turn_2, turn_3 };
+                                    for (int i = 0; i < 4; i++)
+                                        checkBoxes[i] = checkbox2[i];
+                                    break;
+                                }
+                            case 3:
+                                {
+                                    CheckBox[] checkbox3 = { turn_3, turn_4, turn_1, turn_2 };
+                                    for (int i = 0; i < 4; i++)
+                                        checkBoxes[i] = checkbox3[i];
+                                    break;
+                                }
+                            case 4:
+                                {
+                                    CheckBox[] checkbox4 = { turn_2, turn_3, turn_4, turn_1 };
+                                    for (int i = 0; i < 4; i++)
+                                        checkBoxes[i] = checkbox4[i];
+                                    break;
+                                }
+                        }
                     }
-                    //
+                    // Sever gửi thông tin bài vừa được đánh ra
                     else if (strings[0].CompareTo("ThongTinBai") == 0)
                     {
                         string[] strings2 = strings[2].Split(',');
@@ -578,20 +627,14 @@ namespace TaiXiu
                         int[] values = new int[cardsn];
                         int[] types = new int[cardsn];
                         PictureBox[] pictureBoxes = { pic1, pic2, pic3, pic4, pic5, pic6, pic7, pic8, pic9, pic10, pic11, pic12, pic13 };
-                        //
-                        for (int i = 0; i < 13; i++)
-                        {
-                            isSelected[i] = 0;
-                            pictureBoxes[i].Hide();
-                        }
-                        //
+
                         for (int i = 0; i < cardsn; i++)
                         {
                             strings3 = strings2[i].Split("_");
                             values[i] = int.Parse(strings3[0]);
                             types[i] = int.Parse(strings3[1]);
                         }
-                        // lay anh
+                        // Lấy ảnh
                         int x = 266;
                         int a;
                         for (int i = 0; i < cardsn; i++)
@@ -609,7 +652,7 @@ namespace TaiXiu
                             }
                             pictureBoxes[i].Show();
                         }
-                        //lay value0 va value1
+                        //lấy value0 va value1
                         Tvalue0 = values[cardsn - 1];
                         if (Ttype.CompareTo("Le") == 0)
                         {
@@ -630,9 +673,10 @@ namespace TaiXiu
                         else if (Ttype.CompareTo("Sanh") == 0)
                         {
                             Tvalue1 = types[cardsn - 1];
-                        }
+                        }                     
                     }
-                    //ket thuc
+                    //
+                    //Game kết thúc
                     else if (strings[0].CompareTo("GameEnd") == 0)
                     {
                         button2.Show();
@@ -641,8 +685,9 @@ namespace TaiXiu
                         label1.Hide();
                         button4.Hide();
                         button1.Hide();
+                        ImFuckingReady = 0;
                     }
-                    //bo luot
+                    //Có người chơi bỏ lượt
                     else if (strings[0].CompareTo("Skip") == 0)
                     {
                         if (strings.Length > 2)
@@ -664,31 +709,54 @@ namespace TaiXiu
                             turn = int.Parse(strings[1]);
                         }
                     }
-                    //                   
+                    // Đặt lại lượt theo lệnh của sever                  
                     else if (strings[0].CompareTo("SetTurn") == 0)
                     {
                         turn = int.Parse(strings[1]);
                     }
 
-                    if (strings[0].CompareTo("ReturnSanSangButton") == 0)
+                    //Server trả lại nút sẵn sàng
+                    else if (strings[0].CompareTo("ReturnSanSangButton") == 0)
                     {
                         button2.Show();
+                        if (ImFuckingReady == 1)
+                            MessageBox.Show(strings[1]);
+                        ImFuckingReady = 0;
                     }
-
-
-                    else
+                    //Sever gửi số người chơi
+                    else if (strings[0].CompareTo("PlayerNumber") == 0)
                     {
-                        if (turn == yourturn)
-                            checkBox4.Show();
-                        else checkBox4.Hide();
+                        numberplayer.Text = "Số người chơi:";
+                        numberplayer.Text += strings[1];
+                    }
+                    //
+                    //                                    
+                    if (turn == yourturn)
+                    {
+                        //tự bỏ lượt nếu đã bỏ lượt trong round
                         if (skipped == 1)
                             BoLuot();
+                        else
+                        {     
+                            time = 30;
+                            Invoke((MethodInvoker)delegate { timer1.Start(); });
+                        }
                     }
-                }
-                catch
-                {
-                    return;
-                }
+                    else
+                    {                                          
+                        Invoke((MethodInvoker)delegate { timer1.Stop(); });
+                        time = 0;
+                        timer.Text = time.ToString();
+                    }
+                    //
+                    if (playern != 0)
+                    {
+                        for (int i = 0; i < 4; i++)
+                        {
+                            checkBoxes[i].Hide();
+                        }
+                        checkBoxes[turn-1].Show();
+                    }
             }
         }
         byte[] serialize(object o)
@@ -704,9 +772,6 @@ namespace TaiXiu
             BinaryFormatter bf = new BinaryFormatter();
             return bf.Deserialize(ms);
         }
-        #endregion      
+        #endregion    
     }
 }
- 
-
-
