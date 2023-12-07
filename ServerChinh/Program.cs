@@ -1,4 +1,4 @@
-namespace Server
+namespace ServerChinh
 {
     internal static class Program
     {
@@ -11,7 +11,7 @@ namespace Server
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new Server());
+            Application.Run(new SERVERCHINH());
         }
     }
 }

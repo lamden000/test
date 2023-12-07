@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaiXiu", "TaiXiu\TaiXiu.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{62AA96D8-AC76-445A-8F4F-1ADB629FA193}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerChinh", "ServerChinh\ServerChinh.csproj", "{F64C0063-2426-4AE5-8CAE-8B6F4CDDFF97}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{62AA96D8-AC76-445A-8F4F-1ADB629FA193}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62AA96D8-AC76-445A-8F4F-1ADB629FA193}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62AA96D8-AC76-445A-8F4F-1ADB629FA193}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F64C0063-2426-4AE5-8CAE-8B6F4CDDFF97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F64C0063-2426-4AE5-8CAE-8B6F4CDDFF97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F64C0063-2426-4AE5-8CAE-8B6F4CDDFF97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F64C0063-2426-4AE5-8CAE-8B6F4CDDFF97}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

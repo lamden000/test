@@ -6,14 +6,6 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "TaiXiu/1.0.0": {
-        "dependencies": {
-          "Server": "1.0.0"
-        },
-        "runtime": {
-          "TaiXiu.dll": {}
-        }
-      },
       "Server/1.0.0": {
         "runtime": {
           "Server.dll": {}
@@ -22,11 +14,6 @@
     }
   },
   "libraries": {
-    "TaiXiu/1.0.0": {
-      "type": "project",
-      "serviceable": false,
-      "sha512": ""
-    },
     "Server/1.0.0": {
       "type": "project",
       "serviceable": false,

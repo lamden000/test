@@ -1,6 +1,6 @@
 ﻿namespace TaiXiu
 {
-    partial class Form2
+    partial class Game
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Game));
             pictureBox1 = new PictureBox();
             button2 = new Button();
             pictureBox2 = new PictureBox();
@@ -71,7 +71,10 @@
             label1 = new Label();
             timer1 = new System.Windows.Forms.Timer(components);
             timer = new Label();
+            label2 = new Label();
             numberplayer = new Label();
+            label3 = new Label();
+            lSanSang = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
@@ -257,7 +260,7 @@
             // 
             // player2
             // 
-            player2.Location = new Point(342, 0);
+            player2.Location = new Point(12, 145);
             player2.Name = "player2";
             player2.Size = new Size(69, 97);
             player2.TabIndex = 17;
@@ -265,7 +268,7 @@
             // 
             // player3
             // 
-            player3.Location = new Point(12, 142);
+            player3.Location = new Point(360, 2);
             player3.Name = "player3";
             player3.Size = new Size(69, 96);
             player3.TabIndex = 18;
@@ -473,21 +476,51 @@
             timer.TabIndex = 39;
             timer.Text = "time";
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(625, 16);
+            label2.Name = "label2";
+            label2.Size = new Size(50, 20);
+            label2.TabIndex = 40;
+            label2.Text = "label2";
+            // 
             // numberplayer
             // 
             numberplayer.AutoSize = true;
-            numberplayer.Location = new Point(102, 21);
+            numberplayer.Location = new Point(114, 19);
             numberplayer.Name = "numberplayer";
-            numberplayer.Size = new Size(0, 20);
-            numberplayer.TabIndex = 40;
+            numberplayer.Size = new Size(101, 20);
+            numberplayer.TabIndex = 41;
+            numberplayer.Text = "Số người chơi";
             // 
-            // Form2
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(180, 18);
+            label3.Name = "label3";
+            label3.Size = new Size(0, 20);
+            label3.TabIndex = 42;
+            // 
+            // lSanSang
+            // 
+            lSanSang.AutoSize = true;
+            lSanSang.Location = new Point(114, 49);
+            lSanSang.Name = "lSanSang";
+            lSanSang.Size = new Size(92, 20);
+            lSanSang.TabIndex = 43;
+            lSanSang.Text = "Sẵng sàng: 0";
+            // 
+            // Game
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             ClientSize = new Size(800, 450);
+            Controls.Add(lSanSang);
+            Controls.Add(label3);
             Controls.Add(numberplayer);
+            Controls.Add(label2);
             Controls.Add(timer);
             Controls.Add(label1);
             Controls.Add(pic13);
@@ -528,7 +561,8 @@
             Controls.Add(button2);
             Controls.Add(pictureBox1);
             MaximizeBox = false;
-            Name = "Form2";
+            Name = "Game";
+            FormClosing += Form2_FormClosing;
             Load += Form1_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
@@ -605,7 +639,10 @@
         private Label label1;
         private System.Windows.Forms.Timer timer1;
         private Label timer;
+        private Label label2;
         private Label numberplayer;
+        private Label label3;
+        private Label lSanSang;
     }
 
 

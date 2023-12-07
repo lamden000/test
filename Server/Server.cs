@@ -7,14 +7,27 @@ using System;
 
 namespace Server
 {
-    public partial class Form1 : Form
+    public partial class Server : Form
     {
-        public Form1()
+        public string maphong;
+        public int port;
+        public Server(int prt = 0)
         {
             InitializeComponent();
+            port = prt;
             CheckForIllegalCrossThreadCalls = false;
             Connect();
         }
+        #region maphong
+        public void Maphong(string s)
+        {
+            maphong = s;
+        }
+        public int getport()
+        {
+            return port;
+        }
+        #endregion
         #region Server
         IPEndPoint IP;
         Socket server;
@@ -25,11 +38,13 @@ namespace Server
         int turn = 0;//Lượt đi
         int[] exitedplayer = new int[4]; //Lưu lại lượi của người đã thoát
         int n = 0;
+        int[] skippedPlayer = new int[4];// lưu lại người đã bỏ lượt
         int maxj; // Số người chơi trong game lúc phát bài
+        public int dangchoi = 0;//biến để bết phòng đã chơi chưa
         void Connect()
         {
             clients = new List<Socket>();
-            IP = new IPEndPoint(IPAddress.Any, 9999);
+            IP = new IPEndPoint(IPAddress.Any, port);
             server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
             server.Bind(IP);
             string str;
@@ -38,7 +53,7 @@ namespace Server
              {
                  try
                  {
-                     while (true)
+                     while (true && clients.Count() <= 4)
                      {
                          server.Listen(4);
                          Socket client = server.Accept();
@@ -51,12 +66,15 @@ namespace Server
                          //Gửi số lượng người chơi hiện tại
                          str = "PlayerNumber-" + clients.Count().ToString();
                          Thread.Sleep(100);
-                         foreach (Socket socket in clients) { socket.Send(serialize(str)); };
+                         SendDataToClients(str);
+                         str = "ReadyP-" + ReadyP;
+                         Thread.Sleep(100);
+                         SendDataToClients(str);
                      }
                  }
                  catch
                  {
-                     IP = new IPEndPoint(IPAddress.Any, 9999);
+                     IP = new IPEndPoint(IPAddress.Any, port);
                      server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.IP);
                  }
              });
@@ -65,6 +83,12 @@ namespace Server
         }
         //
         //Nhận dữ liệu từ người chơi
+        public int songuoi()
+        {
+            return clients.Count();
+        }
+        void Close()
+        { }
         void Recieve(object obj)
         {
             Socket client = obj as Socket;
@@ -76,16 +100,22 @@ namespace Server
                     client.Receive(data);
                     string str = (string)deserialize(data);
                     string[] strings = str.Split("-");
+
                     //Sẵn sàng
                     if (strings[0].CompareTo("Ready") == 0)
                     {
                         ReadyP++;
+                        str = "ReadyP-" + ReadyP;
+                        SendDataToClients(str);
+
                         if (ReadyP >= clients.Count() && clients.Count() > 1)
                         {
                             PhatBai();
                             ReadyP = 0;
-                            n = 0;
-                        }
+                            Reset("skippedPlayer");
+                            Reset("exitedplayer");
+                            dangchoi = 1;
+                        }                   
                     }
                     else
                     {
@@ -93,20 +123,23 @@ namespace Server
                         if (strings[0].CompareTo("ThongTinBai") == 0)
                         {
                             SetTurn();
-                            str = str + "-" + turn.ToString();
+                            str = str + "-" + turn.ToString();                         
                         }
 
                         // Có người thắng
                         else if (strings[0].CompareTo("Win") == 0)
                         {
-                            str = "GameEnd-player " + turn.ToString() + " won";
+                            dangchoi = 0;
+                            str = "ReadyP-" + ReadyP;
+                            SendDataToClients(str);
+                            str = "GameEnd-Người chơi- " + turn.ToString() + "- thắng";                           
                         }
                         // Bỏ lượt
                         else if (strings[0].CompareTo("Skip") == 0)
-                        {
+                        {                                                     
+                            skippedPlayer[SkipP] = turn;
+                            SkipP++;
                             SetTurn();
-                            if (strings[1].CompareTo("0") == 0)
-                                SkipP++;
                             if (SkipP != clients.Count - 1)
                             {
                                 str = "Skip-" + turn.ToString();
@@ -114,53 +147,81 @@ namespace Server
                             else
                             {
                                 str = "Skip-0-" + turn.ToString();
-                                SkipP = 0;
+                                Reset("skippedPlayer");
                             }
                         }
                         //Yêu cầu khởi tạo lại lượt
                         else if (strings[0].CompareTo("SetTurn") == 0)
-                        {
+                        {                          
                             turn = int.Parse(strings[1]);
                         }
                         //
                         // Phản hồi cho người chơi
-                        data = serialize(str);
-                        foreach (Socket socket in clients)
-                            socket.Send(data);
+                        SendDataToClients(str);
                     }
                 }
-
             }
             catch
             {
-                //Sử Lý khi có người thoát game
+                 try
+                  {
+                    //Sử Lý khi có người thoát game
+                    //
+                    int indexofclient = clients.IndexOf(client);
+                    client.Close();
+                    clients.Remove(client);
+                    //Khi đang chơi
+                    if (dangchoi == 1)
+                    {
+                        string str;                       
+                        exitedplayer[n] = indexofclient + 1;
+                        n++;               
+                        //Chia lại lượt
+                        if (indexofclient + 1 == turn)
+                        {
+                            SetTurn();
+                            str = "SetTurn-" + turn.ToString();
+                            SendDataToClients(str);
+                        }
+                     
+                        //Nếu còn một người chơi người đó sẽ thắng
+                        Thread.Sleep(100);
+                        if (clients.Count == 1)
+                        {
+                            Reset("skippedPlayer");
+                            Reset("exitedPlayer");
+                            str = "GameEnd-Bạn Thắng";
+                            SendDataToClients(str);
+                            dangchoi = 0;
+                        }                   
+                        for (int i = 0; i < 4; i++)
+                            if (indexofclient + 1 == skippedPlayer[i])
+                                SkipP--;
+                    }
+                    //sử lý chung
+                    //Thông báo và cấp quyền bắt đầu lại game cho người chơi
+                    ReadyP = 0;
+                    string s = "ReturnSanSangButton-Có Người Chơi Đã Thoát Hãy Sàng Nếu Bạn Muốn Chơi(Trò chơi sẽ bắt đầu lại nếu tất cả người chơi ấn sẵn sàng)-"+indexofclient;
+                    Thread.Sleep(100);
+                    SendDataToClients(s);
 
-                exitedplayer[n] = clients.IndexOf(client) + 1;
-                n++;
-                client.Close();
-                clients.Remove(client);              
-                //Chia lại lượt                            
-                SetTurn();
-                string str = "SetTurn-" + turn.ToString();
-                foreach (Socket socket in clients)
-                    socket.Send(serialize(str));
-                //Gửi số lượng người chơi còn lại trong bàn                                                       
-                str = "PlayerNumber-" + clients.Count().ToString();
-                foreach (Socket socket in clients)
-                {
-                    socket.Send(serialize(str));
+                    //gửi số người chơi còn lại trong bàn
+                    s = "PlayerNumber-" + clients.Count().ToString();
+                   SendDataToClients(s);
                 }
-                //Thông báo và cấp quyền bắt đầu lại game cho người chơi
-                str = "ReturnSanSangButton-Có Người Chơi Đã Thoát Hãy Sàng Nếu Bạn Muốn Chơi(Trò chơi sẽ bắt đầu lại nếu tất cả người chơi ấn sẵn sàng)";
-                foreach (Socket socket in clients)
-                    socket.Send(serialize(str));
-            
-                ReadyP = 0;
-
+                catch {  }
             }
         }
         //
         //Serialize & Deserialize
+        void SendDataToClients(string data)
+        {
+            byte[] serializedData = serialize(data);
+            foreach (Socket socket in clients)
+            {
+                socket.Send(serializedData);
+            }
+        }
         byte[] serialize(object o)
         {
             MemoryStream ms = new MemoryStream();
@@ -207,10 +268,11 @@ namespace Server
                     }
                     else i--;
                 }
-                str = str + clients.Count.ToString() + "-" + (j + 1).ToString() + "-0";
+                str = str +"-"+ clients.Count.ToString() + "-" + (j + 1).ToString() + "-0";
                 clients[j].Send(serialize(str));
             }
             //Gửi lượt = lượt của người chơi có lá bài nhỏ nhất
+             Thread.Sleep(100);
             foreach (Socket client in clients)
             {
                 str = "SetTurn-" + turn.ToString();
@@ -224,14 +286,32 @@ namespace Server
         void SetTurn()
         {
             turn++;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < maxj; i++)
             {
-                if (turn == exitedplayer[i])
+                while (turn > maxj || skippedPlayer.Contains(turn) || exitedplayer.Contains(turn))
                 {
                     turn++;
+                    if (turn > maxj)
+                        turn = 1;
                 }
-                if (turn > maxj)
-                    turn = 1;
+            }
+        }
+
+
+        void Reset(string str)
+        { 
+            switch (str) 
+            {
+                case ("skippedPlayer"):
+                    for (int i = 0; i < 4; i++)
+                        skippedPlayer[i] = 0;
+                    SkipP = 0;
+                    break;
+                case ("exitedPlayer"):
+                    for (int i = 0; i < 4; i++)
+                        exitedplayer[i] = 0;
+                    n= 0;
+                    break;
             }
         }
     }
